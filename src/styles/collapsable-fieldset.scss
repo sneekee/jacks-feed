@@ -1,0 +1,56 @@
+fieldset {
+	margin: 1em 0;
+	position: relative;
+
+	padding: 1em 1.5rem 0.5em 1.5rem;
+	transition: padding 300ms ease;
+	/* animate padding */
+	border-radius: 8px;
+	border: 1px solid #444444;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+	color: #cccccc;
+}
+
+legend {
+	cursor: pointer;
+	user-select: none;
+	padding: 0.2em 0.4em;
+	display: inline-block;
+	position: relative;
+	z-index: 1;
+}
+
+legend::after {
+	content: " ^";
+	display: inline-block;
+	font-weight: bold;
+	font-size: 1.2em;
+	vertical-align: middle;
+	margin-left: 0.3em;
+	transition: transform 0.1s;
+	transform: rotate(180deg);
+}
+
+:host([open]) legend::after {
+	transform: rotate(0);
+}
+
+:host(:not([open])) fieldset {
+	padding: .5rem 1.5rem;
+}
+
+.clickable-top {
+	position: absolute;
+	top: -30px;
+	left: 0;
+	right: 0;
+	height: 2em;
+	cursor: pointer;
+	z-index: 0;
+}
+
+.content-wrapper {
+	overflow: hidden;
+	height: 0;
+	transition: height 300ms ease;
+}

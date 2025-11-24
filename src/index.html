@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jack's 3-2-1 Feed Calculator</title>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>Jack's 3-2-1 Feed Calculator</h1>
+    </header>
+
+    <section>
+      <header>
+        <p>
+          This tool helps you calculate the proper nutrient measurements based on the official feed chart. Use the first
+          slider to set the size of your reservoir, and select the units (liters or gallons) using the radio buttons
+          below it. The second slider allows you to adjust the nutrient strength from 50% to 200% of the recommended
+          feed, so you can fine-tune the concentration for your specific needs.
+        </p>
+        <collapsible-fieldset open>
+          <legend>Options</legend>
+          <div>
+            <label for="reservoirSize">Reservoir Size <span data-bind="text: reservoirLabel"></span></label>
+            <custom-slider id="reservoirSize" min="1" max="20" step="1" show-stops
+              data-bind="
+                value: reservoirSize,
+                attr: { 
+                  'tooltip-format': reservoirUnits() === 'Liters' ? '{value} Liters' : '{value} Gallons' 
+                }
+              "
+              role="slider"
+              aria-valuemin="1"
+              aria-valuemax="20"
+              aria-valuenow="1"
+              aria-label="Reservoir Size">
+            </custom-slider>
+            <div class="units" data-bind="foreach: ['liters', 'gallons']">
+              <label>
+                <input type="radio" name="units" data-bind="
+                        checked: $parent.selectedUnit, 
+                        attr: { value: $data },
+                        aria-label: $data + ' units'
+                      ">
+                <span data-bind="text: $data.charAt(0).toUpperCase() + $data.slice(1)"></span>
+              </label>
+            </div>
+          </div>
+          <div>
+            <label for="strength">Strength <span data-bind="text: strengthLabel"></span></label>
+            <custom-slider id="strength" min="50" max="200" step="1" value="100" tooltip-format="{value}%"
+              data-bind="value: nutrientStrength"
+              role="slider"
+              aria-valuemin="50"
+              aria-valuemax="200"
+              aria-valuenow="100"
+              aria-label="Nutrient Strength">
+            </custom-slider>
+
+            <div class="strength-labels">
+              <span>50%</span>
+              <span style="padding-left: 8px;">125%</span>
+              <span>200%</span>
+            </div>
+          </div>
+        </collapsible-fieldset>
+      </header>
+    </section>
+
+    <footer>
+      <p>
+        This site is an independent project and is not affiliated with, endorsed by, or sponsored by Jack's Nutrients or
+        any of its affiliates.
+      </p>
+    </footer>
+</body>
+
+</html>
