@@ -1,12 +1,14 @@
-import collapsibleFieldsetStyles from '../styles/collapsable-fieldset.scss?inline';
+import collapsibleFieldsetStyles from '../../styles/controls/collapsable-fieldset.scss?inline';
 
 const template = document.createElement('template');
 template.innerHTML = `
   <fieldset>
-		<div class="clickable-top"></div>
+		<div class="clickable-top" role="button" tabindex="0" aria-expanded="false"></div>
 		<legend></legend>
 		<div class="content-wrapper">
-			<slot></slot>
+			<div part="content">
+				<slot></slot>
+			</div>
 		</div>
 	</fieldset>
 `;
@@ -30,20 +32,29 @@ class CollapsibleFieldset extends HTMLElement {
 		const originalLegend = this.querySelector('legend');
 		if (originalLegend) {
 			this.legendEl.textContent = originalLegend.textContent;
-			originalLegend.remove();
+			originalLegend.style.display = 'none';
 		}
+		
+		const isOpen = this.hasAttribute('open');
+		this.clickableTop.setAttribute('aria-expanded', isOpen);
 
 		this.legendEl.addEventListener('click', this._onToggle);
 		this.clickableTop.addEventListener('click', this._onToggle);
+		this.clickableTop.addEventListener('keydown', (e) => {
+			if (e.key === ' ' || e.key === 'Enter') {
+				e.preventDefault();
+				this._onToggle();
+			}
+		});
 
 		this.resizeObserver = new ResizeObserver(() => {
-			if (this.hasAttribute('open')) {
+			if (this.hasAttribute('open') && this.wrapper.style.height !== 'auto') {
 				this.wrapper.style.height = this.wrapper.scrollHeight + 'px';
 			}
 		});
 		this.resizeObserver.observe(this.wrapper);
-
-		if (this.hasAttribute('open')) {
+		
+		if (isOpen) {
 			this.wrapper.style.height = this.wrapper.scrollHeight + 'px';
 			requestAnimationFrame(() => {
 				this.wrapper.style.height = 'auto';
@@ -54,6 +65,7 @@ class CollapsibleFieldset extends HTMLElement {
 	disconnectedCallback() {
 		this.legendEl.removeEventListener('click', this._onToggle);
 		this.clickableTop.removeEventListener('click', this._onToggle);
+		this.clickableTop.removeEventListener('keydown', this._onToggle);
 		this.resizeObserver.disconnect();
 	}
 
@@ -67,6 +79,8 @@ class CollapsibleFieldset extends HTMLElement {
 
 	_expand() {
 		this.setAttribute('open', '');
+		this.clickableTop.setAttribute('aria-expanded', 'true');
+		
 		const height = this.wrapper.scrollHeight + 'px';
 		this.wrapper.style.height = height;
 
@@ -80,6 +94,7 @@ class CollapsibleFieldset extends HTMLElement {
 	}
 
 	_collapse() {
+		this.clickableTop.setAttribute('aria-expanded', 'false');
 		const height = this.wrapper.scrollHeight + 'px';
 		this.wrapper.style.height = height;
 		this.wrapper.getBoundingClientRect();

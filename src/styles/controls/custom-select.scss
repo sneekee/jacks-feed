@@ -1,0 +1,58 @@
+@use "sass:color";
+
+:root {
+  --dp: #{$dp};
+}
+
+:host {
+  display: inline-flex;
+  outline: none;
+
+  > #listbox {
+    border: 1px solid #{$switch-border};
+    box-shadow: #{$switch-elevation};
+    border-radius: #{$switch-radius};
+    overflow: clip;
+  }
+}
+
+:host([layout="wrap"]) #listbox {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+:host([layout="fill"]) #listbox {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  flex-direction: column;
+}
+
+:host([layout="fill"]) button {
+  flex: 1 1 0;
+}
+
+button {
+  padding: calc(var(--dp) * 0.75);
+  white-space: nowrap;
+  justify-content: center;
+  align-items: center;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-size: calc(var(--dp) * 0.9);
+  letter-spacing: $switch-label-letter-spacing;
+  cursor: pointer;
+  color: #{$border-gray};
+  background: #{$switch-bg};
+  border: none;
+  flex-grow: 2;
+}
+
+button[selected] {
+  background: #{$switch-bg-active};
+  color: #{$accent-light};
+}
+
+:host([disabled]) button {
+  opacity: 0.6;
+  pointer-events: none;
+}

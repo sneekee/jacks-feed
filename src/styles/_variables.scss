@@ -1,6 +1,86 @@
-$jack-blue:        #0d1f70;    // deep navy/royal blue  
-$jack-aqua:        #3cc0ba;    // teal / aqua bar  
-$bg-dark:          #1a1a1a;    // very dark gray / blackish  
-$text-light-gray:  #cccccc;    // soft light gray  
-$border-gray:      #444444;    // for subtle borders 
+@use "sass:color";
+
+// --- Base Units and Colors ---
+$dp: 1rem;
+$jack-blue:        #0d1f70;
+$jack-aqua:        #3cc0ba;
+$bg-dark:          #1a1a1a;
+$text-light-gray:  #cccccc;
+$border-gray:      #444444;
 $shadow-color: rgba(0, 0, 0, 0.6);
+
+// --- Primary/Accent Colors ---
+$primary: #0d1f70;
+$accent: #3cc0ba;
+$accent-light: color.adjust($accent, $lightness: 20%);
+$accent-dark: color.adjust($accent, $lightness: -20%);
+
+// --- Depths (Primary Colors derived from $bg-dark / $primary-dp1) ---
+$primary-dp1: #1a1a1a;
+$primary-dp2: color.adjust($primary-dp1, $lightness: 5%);
+$primary-dp3: color.adjust($primary-dp1, $lightness: 10%);
+$primary-dp4: color.adjust($primary-dp1, $lightness: 15%);
+$primary-dp5: color.adjust($primary-dp1, $lightness: 20%);
+$primary-dp6: color.adjust($primary-dp1, $lightness: 25%);
+
+// --- Switch/Select Component Variables ---
+$switch-radius: 12px;
+$switch-height: 40px;
+$switch-elevation: 0 2px 4px rgba(0, 0, 0, 0.25);
+$switch-press-scale: 0.97;
+$switch-bg: $primary-dp1;
+$switch-bg-active: $primary-dp3;
+$switch-border: $border-gray;
+$switch-label-font-size: 15px; // Keeping as px for text size
+$switch-label-letter-spacing: 0.4px;
+$switch-hover-lightness-adjust: 6%;
+
+// --- Collapsible Fieldset Variables ---
+$fieldset-margin: 1em 0;
+$fieldset-padding-closed: 0.5rem 1.5rem;
+$fieldset-radius: 8px;
+$fieldset-border-color: #444444;
+$fieldset-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+$fieldset-color: #cccccc;
+$legend-padding: 0.2em 0.4em;
+$legend-icon-margin-left: 0.3em;
+$legend-icon-font-size: 1.1em;
+$legend-icon-transition-duration: 0.1s;
+$content-transition-duration: 300ms;
+$clickable-top-height: 2em;
+$clickable-top-offset: -30px;
+
+// --- Custom Slider Variables ---
+$slider-default-height: 40px;
+$slider-padding-horizontal: 10px;
+$slider-track-height: 4px;
+$slider-track-bg-color: rgba(255, 255, 255, 0.3);
+$slider-thumb-width: 20px;
+$slider-thumb-height: 20px;
+$slider-thumb-border-width: 2px;
+$slider-thumb-active-shadow: 0 0 0 8px rgba(60, 109, 204, 0.2);
+$slider-shadow-transition: 0.2s ease;
+$slider-tooltip-top-offset: -30px;
+$slider-tooltip-transition: 0.2s ease;
+$slider-track-radius: 2px;
+$slider-thumb-radius: 50%;
+$slider-tooltip-bg: rgba(0, 0, 0, 0.75);
+$slider-tooltip-color: #fff;
+$slider-tooltip-padding: 4px 8px;
+$slider-tooltip-radius: 4px;
+$slider-tooltip-font-size: 12px;
+$slider-stop-color: rgba(255, 255, 255, 0.5);
+$slider-stop-size: 4px;
+
+// --- Index.scss specific variables/magic numbers ---
+$main-max-width-multiplier: 80;
+$header-border-thickness: 0.2;
+$settings-grid-gap: 1.5;
+$range-input-margin-bottom: 0.5;
+$radio-margin-right: 0.25;
+$target-box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.25);
+$target-border-height: 3px;
+$products-max-width: 600px;
+$products-table-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+$products-table-border-thickness: 2px;
+$footer-box-shadow: 0 -2px 6px $shadow-color;

@@ -1,0 +1,56 @@
+fieldset {
+	margin: $fieldset-margin;
+	position: relative;
+
+	transition: padding $content-transition-duration ease;
+	border-radius: $fieldset-radius;
+	border: 1px solid $fieldset-border-color;
+	box-shadow: $fieldset-box-shadow;
+	color: $fieldset-color;
+}
+
+legend {
+	cursor: pointer;
+	user-select: none;
+	padding: $legend-padding;
+	display: inline-block;
+	position: relative;
+	z-index: 1;
+}
+
+legend::after {
+	content: " ^";
+	display: inline-block;
+	font-weight: bold;
+	font-size: $legend-icon-font-size;
+	line-height: 1;
+	vertical-align: middle;
+	margin-left: $legend-icon-margin-left;
+	transform-origin: 50% 35%;
+	transition: transform $legend-icon-transition-duration;
+	transform: rotate(180deg);
+}
+
+:host([open]) legend::after {
+	transform: rotate(0deg);
+}
+
+:host(:not([open])) fieldset {
+	padding: $fieldset-padding-closed;
+}
+
+.clickable-top {
+	position: absolute;
+	top: $clickable-top-offset;
+	left: 0;
+	right: 0;
+	height: $clickable-top-height;
+	cursor: pointer;
+	z-index: 0;
+}
+
+.content-wrapper {
+	overflow: hidden;
+	height: 0;
+	transition: height $content-transition-duration ease;
+}

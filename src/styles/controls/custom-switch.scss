@@ -1,0 +1,53 @@
+@use "sass:color";
+
+:host { display: inline-block; }
+
+.switch-layout {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  border-radius: #{$switch-radius};
+  overflow: hidden;
+  background: #{$switch-bg};
+  border: 1px solid #{$switch-border};
+  box-shadow: #{$switch-elevation};
+  user-select: none;
+}
+
+.label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: #{$switch-height};
+
+  font-family: "Inter", "Segoe UI", sans-serif;
+  font-size: $switch-label-font-size;
+  letter-spacing: $switch-label-letter-spacing;
+  cursor: pointer;
+
+  color: #{$border-gray};
+  background: #{$switch-bg};
+  padding: 0 .25em;
+
+  transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+}
+
+.label.active {
+  background: #{$switch-bg-active};
+  color: #{$accent-light};
+}
+
+.label:active {
+  transform: scale(#{$switch-press-scale});
+}
+
+.label:hover:not(.active) {
+  background: #{color.adjust($switch-bg, $lightness: $switch-hover-lightness-adjust)};
+}
+
+.switch-root {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
