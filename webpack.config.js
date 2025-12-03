@@ -6,67 +6,74 @@ import sass from "sass-embedded";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default {
-  entry: "./src/scripts/index.js",
+export default (env, argv) => {
+  const isProduction = argv.mode === 'production';
+  const repoName = 'your-repo-name';
+  
+  const publicPath = isProduction ? `/${repoName}/` : '/';
 
-  output: {
-    path: path.resolve("dist"),
-    filename: "bundle.js",
-    clean: true,
-    publicPath: ""
-  },
+  return {
+    entry: "./src/scripts/index.js",
 
-  module: {
-    rules: [
-      {
-        test: /\.scss$/,
-        resourceQuery: /inline/,
-        use: [
-          'raw-loader',
-          {
-            loader: 'sass-loader',
-            options: {
-              implementation: sass,
-              additionalData: `@use 'src/styles/variables' as *;`
-            }
-          }
-        ]
-      },
-      {
-        test: /\.scss$/,
-        resourceQuery: { not: [/inline/] },
-        use: [
-          'style-loader',
-          'css-loader',
-          {
-            loader: 'sass-loader',
-            options: { implementation: sass }
-          }
-        ]
-      }
-    ]
-  },
-
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: "./src/index.html"
-    })
-  ],
-
-  resolve: {
-    extensions: [".js"],
-    alias: {
-      '~styles': path.resolve(__dirname, 'src/styles')
-    }
-  },
-
-  devServer: {
-    static: {
-      directory: path.resolve(process.cwd(), 'src'),
-      watch: true
+    output: {
+      path: path.resolve("dist"),
+      filename: "bundle.js",
+      clean: true,
+      publicPath: publicPath 
     },
-    hot: true,
-    open: true,
-    client: { overlay: false }
-  },
+
+    module: {
+      rules: [
+        {
+          test: /\.scss$/,
+          resourceQuery: /inline/,
+          use: [
+            'raw-loader',
+            {
+              loader: 'sass-loader',
+              options: {
+                implementation: sass,
+                additionalData: `@use 'src/styles/variables' as *;`
+              }
+            }
+          ]
+        },
+        {
+          test: /\.scss$/,
+          resourceQuery: { not: [/inline/] },
+          use: [
+            'style-loader',
+            'css-loader',
+            {
+              loader: 'sass-loader',
+              options: { implementation: sass }
+            }
+          ]
+        }
+      ]
+    },
+
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: "./src/index.html"
+      })
+    ],
+
+    resolve: {
+      extensions: [".js"],
+      alias: {
+        '~styles': path.resolve(__dirname, 'src/styles')
+      }
+    },
+
+    devServer: {
+      static: {
+        directory: path.resolve(process.cwd(), 'src'),
+        watch: true
+      },
+      hot: true,
+      open: true,
+      client: { overlay: false }
+    },
+  }
 };
