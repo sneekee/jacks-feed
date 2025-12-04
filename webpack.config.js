@@ -7,10 +7,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default (env, argv) => {
-  const isProduction = argv.mode === 'production';
-  const repoName = 'your-repo-name';
-  
-  const publicPath = isProduction ? `/${repoName}/` : '/';
+  const isProduction = argv.mode === 'production';  
+  const publicPath = isProduction ? `/jacks-feed/` : '/';
 
   return {
     entry: "./src/scripts/index.js",
@@ -55,7 +53,10 @@ export default (env, argv) => {
 
     plugins: [
       new HtmlWebpackPlugin({
-        template: "./src/index.html"
+        template: "./src/index.html",
+        minify: {
+          removeComments: false 
+        }
       })
     ],
 

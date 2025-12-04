@@ -169,4 +169,11 @@ class ViewModel {
   }
 }
 
-ko.applyBindings(new ViewModel());
+Promise.all([
+    customElements.whenDefined("custom-slider"),
+    customElements.whenDefined("custom-unit-switch"),
+    customElements.whenDefined("custom-select"),
+    customElements.whenDefined("collapsible-fieldset")
+]).then(() => {
+    ko.applyBindings(new ViewModel());
+});

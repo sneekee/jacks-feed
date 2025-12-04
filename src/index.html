@@ -68,10 +68,8 @@
       </collapsible-fieldset>
 
       <div class="formula">
-        <custom-select data-bind="value: selectedPlantStage" layout="fill">
-          <!-- ko foreach: plantStages() -->
+        <custom-select data-bind="value: selectedPlantStage, foreach: plantStages()" layout="fill">
           <option data-bind="attr:{ value: stage }, text: stage"></option>
-          <!-- /ko -->
         </custom-select>
         <div class="data">
           <div class="targets">
