@@ -38,7 +38,7 @@ You need to have Node.js and npm (or yarn) installed on your system.
 
 ```
 
-git clone [https://github.com/sneekee/jacks-feed.git](https://www.google.com/search?q=https://github.com/sneekee/jacks-feed.git)
+git clone https://github.com/sneekee/jacks-feed.git
 cd jacks-feed
 
 ```
