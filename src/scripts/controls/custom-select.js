@@ -10,60 +10,70 @@ class CustomSelect extends HTMLElement {
 
     this._shadow.innerHTML = `
       <style>${selectStyles}</style>
-
       <div id="listbox" role="listbox" tabindex="0"></div>
     `;
 
     this.listbox = this._shadow.querySelector("#listbox");
 
     this._options = [];
-    this._value = "";
-
-    this._observer = new MutationObserver(() => {
-      this._parseLightDOM();
-      this._render();
-    });
+    this._value = null;
   }
 
   connectedCallback() {
-    this._upgradeProperty("value");
-    this._parseLightDOM();
     this._render();
     this._attachEvents();
-    this._observer.observe(this, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["value"]
-    });
   }
 
-  disconnectedCallback() {
-    this._observer.disconnect();
+  // -----------------------------
+  // KO OPTIONS SUPPORT
+  // -----------------------------
+  set options(list) {
+    if (!Array.isArray(list)) return;
+    this._rawOptions = list;
+    this._rebuildOptions();
   }
 
-  _upgradeProperty(prop) {
-    if (this.hasOwnProperty(prop)) {
-      let v = this[prop];
-      delete this[prop];
-      this[prop] = v;
-    }
+  get options() {
+    return this._rawOptions;
   }
 
-  _parseLightDOM() {
-    this._options = [...this.querySelectorAll("[value]")].map(el => ({
-      label: el.textContent.trim(),
-      value: el.getAttribute("value")
+  set optionsText(prop) {
+    this._optionsText = prop;
+    this._rebuildOptions();
+  }
+
+  get optionsText() {
+    return this._optionsText;
+  }
+
+  set optionsValue(prop) {
+    this._optionsValue = prop;
+    this._rebuildOptions();
+  }
+
+  get optionsValue() {
+    return this._optionsValue;
+  }
+
+  _rebuildOptions() {
+    if (!Array.isArray(this._rawOptions)) return;
+
+    this._options = this._rawOptions.map(item => ({
+      raw: item,
+      label: this._optionsText ? item[this._optionsText] : String(item),
+      value: this._optionsValue ? item[this._optionsValue] : item
     }));
 
-    if (!this._value && this._options.length) {
-      this.value = this._options[0].value;
-    }
+    this._render();
   }
 
+  // -----------------------------
+  // RENDER
+  // -----------------------------
   _render() {
+    if (!this.listbox) return;
+
     this.listbox.innerHTML = "";
-    let selectedButton = null;
 
     this._options.forEach((opt, i) => {
       const btn = document.createElement("button");
@@ -72,10 +82,9 @@ class CustomSelect extends HTMLElement {
       btn.dataset.index = i;
       btn.value = opt.value;
 
-      if (opt.value === this._value) {
+      if (opt.value == this._value) {
         btn.setAttribute("selected", "");
         btn.setAttribute("aria-selected", "true");
-        selectedButton = btn;
       } else {
         btn.removeAttribute("selected");
         btn.setAttribute("aria-selected", "false");
@@ -83,13 +92,11 @@ class CustomSelect extends HTMLElement {
 
       this.listbox.appendChild(btn);
     });
-    
-    if (selectedButton && this.listbox === this.shadowRoot.activeElement) {
-        selectedButton.focus();
-        selectedButton.scrollIntoView({ block: 'nearest' });
-    }
   }
 
+  // -----------------------------
+  // EVENTS
+  // -----------------------------
   _attachEvents() {
     this.listbox.addEventListener("click", e => {
       if (e.target.tagName === "BUTTON") {
@@ -97,89 +104,48 @@ class CustomSelect extends HTMLElement {
         this._emit();
       }
     });
-
-    this.listbox.addEventListener("keydown", e => {
-      const currentIndex = this._options.findIndex(o => o.value === this._value);
-      const last = this._options.length - 1;
-      let next = currentIndex;
-      let handled = false;
-
-      switch (e.key) {
-        case "ArrowRight":
-        case "ArrowDown":
-          next = Math.min(currentIndex + 1, last);
-          handled = true;
-          break;
-        case "ArrowLeft":
-        case "ArrowUp":
-          next = Math.max(currentIndex - 1, 0);
-          handled = true;
-          break;
-        case "Home":
-          next = 0;
-          handled = true;
-          break;
-        case "End":
-          next = last;
-          handled = true;
-          break;
-        case " ":
-        case "Enter":
-          handled = true;
-          break;
-        default:
-          return;
-      }
-      
-      e.preventDefault();
-      
-      if (handled && e.key !== " " && e.key !== "Enter") {
-        this.value = this._options[next].value;
-        this._emit();
-      }
-    });
   }
 
   _emit() {
-    this.dispatchEvent(new Event("input", { bubbles: true }));
     this.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
+  // -----------------------------
+  // VALUE
+  // -----------------------------
   get value() {
     return this._value;
   }
+
   set value(v) {
     if (v === this._value) return;
     this._value = v;
-    this._internals.setFormValue(v);
+
+    // Only update form value if inside a real form
+    if (this._internals && this._internals.form) {
+      this._internals.setFormValue(v);
+    }
+
     this._render();
   }
 
-  get name() {
-    return this.getAttribute("name");
-  }
-  set name(v) {
-    this.setAttribute("name", v);
-  }
 
+  // -----------------------------
+  // DISABLED
+  // -----------------------------
   get disabled() {
     return this.hasAttribute("disabled");
   }
+
   set disabled(v) {
     v ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
   }
 
-  formResetCallback() {
-    if (this._options.length) {
-      this.value = this._options[0].value;
-    }
-  }
-
   static get observedAttributes() {
-    return ["disabled", "layout"];
+    return ["disabled"];
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name) {
     if (name === "disabled") {
       if (this.disabled) {
         this.listbox.setAttribute("aria-disabled", "true");
@@ -187,9 +153,13 @@ class CustomSelect extends HTMLElement {
         this.listbox.removeAttribute("aria-disabled");
       }
     }
+  }
 
-    if (name === "layout") {
-      this._render();
+  _upgradeProperty(prop) {
+    if (this.hasOwnProperty(prop)) {
+      const v = this[prop];
+      delete this[prop];
+      this[prop] = v;
     }
   }
 }

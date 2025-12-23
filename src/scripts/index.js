@@ -1,8 +1,10 @@
 import ko from "knockout";
-import { PlantStage } from './models/plant-stage.js';
-import { PRODUCT_CATALOG } from './models/product-registry.js';
-import { PLANT_STAGES_DATA } from './models/plant-stage-data.js';
-import { UNITS, MIXING_ORDER, GALLON_TO_LITER_FACTOR } from './models/constants.js';
+import { FEED_SCHEDULES } from "./data/feed-schedule-registry.js";
+import { UNITS } from './data/constants.js';
+import { Options, ReservoirScale } from "./models/options.js";
+import { PlantStage } from "./models/plant-stage.js";
+
+import './ko-binding-handlers.js';
 
 import "../styles/index.scss";
 import './controls/custom-slider.js';
@@ -10,12 +12,9 @@ import './controls/custom-switch.js';
 import './controls/collapsable-fieldset.js';
 import './controls/custom-select.js';
 
-function calculateAmount(productKey, reservoirSize, conversionFactor, strengthMultiplier) {
-  const product = PRODUCT_CATALOG[productKey];
-  if (!product) return 0;
-
+function calculateAmount(baseGrams, reservoirSize, conversionFactor, strengthMultiplier) {
   return (
-    product.baseValue *
+    baseGrams *
     conversionFactor *
     (strengthMultiplier / 100) *
     reservoirSize
@@ -26,7 +25,7 @@ const mediaQuery = window.matchMedia('(max-width: 768px)');
 
 function updateCustomSelectLayout() {
   setTimeout(() => {
-    const customSelect = document.querySelector('custom-select');
+    const customSelect = document.querySelector('.formula > custom-select.stages');
     if (customSelect) {
       const newLayout = mediaQuery.matches ? 'wrap' : 'fill';
       customSelect.setAttribute('layout', newLayout);
@@ -41,57 +40,52 @@ const STORAGE_KEY = 'jacksNutrientCalculatorState';
 
 class ViewModel {
   constructor() {
-    this.reservoirSize = ko.observable(5);
-    this.selectedUnit = ko.observable(UNITS.GALLONS);
-    this.nutrientStrength = ko.observable(100);
-    this.selectedPlantStage = ko.observable('Propagation');
+    this._isLoadingState = true;
+    this.selectedFeedSchedule = ko.observable(FEED_SCHEDULES[321]);
+    this.options = ko.observable(new Options({
+      reservoirScale: ReservoirScale["1-20"],
+      reservoirSize: 5,
+      reservoirUnits: UNITS.GALLONS,
+      strength: 100,
+      selectedMedium: this.selectedFeedSchedule().mediums[0]
+    }));
 
-    this.loadState();
-    this.setupStateSaving();
-
-    this.conversionFactor = ko.computed(() => {
-      return this.selectedUnit() === UNITS.GALLONS
-        ? 1
-        : 1 / GALLON_TO_LITER_FACTOR;
+    this.selectedMedium = ko.observable(this.selectedFeedSchedule().mediums[0].key);
+    this.selectedMediumObj = ko.pureComputed(() => { 
+      return this.availableMediums().find(m => m.key === this.selectedMedium());
     });
 
-    this.reservoirUnits = ko.computed(() =>
-      this.selectedUnit() === UNITS.LITERS ? "Liters" : "Gallons"
-    );
+    this.availableMediums = ko.pureComputed(() => this.selectedFeedSchedule().mediums );
 
-    this.reservoirLabel = ko.computed(() =>
-      ` (${this.reservoirSize()} ${this.reservoirUnits()})`
-    );
+    this.availableStages = ko.pureComputed(() => { const medium = this.selectedMediumObj(); return medium ? medium.stages : []; });
 
-    this.strengthLabel = ko.computed(() =>
-      ` (${this.nutrientStrength()}%)`
-    );
-
-    this.tableLabel = ko.computed(() => `Amount per ${this.reservoirSize()} ${this.reservoirUnits()} at ${this.nutrientStrength()}%`);
-
-    this.plantStages = ko.observableArray(
-      PLANT_STAGES_DATA.map(data => new PlantStage(
-        data.stage, data.targetEc, data.targetPpm500, data.targetPpm700, data.formula
-      ))
-    );
+    // Initialize selectedStage safely 
+    this.selectedStage = ko.observable(); const initialMedium = this.selectedMediumObj(); 
+    if (initialMedium && initialMedium.stages.length > 0) { 
+      this.selectedStage(initialMedium.stages[0].key); 
+    }
+    this.selectedStageObj = ko.pureComputed(() => this.availableStages().find(s => s.key === this.selectedStage()) );
     
-    this.currentStage = ko.computed(() => this.plantStages().find(
-        s => s.stage === this.selectedPlantStage()
-      ) || new PlantStage('Default', 0, 0, 0, ['PlainWater']));
+    
+    this.currentStage = ko.pureComputed(() => {
+      const stage = this.selectedStageObj();
+      return stage || new PlantStage('Default', 0, 0, 0, ['PlainWater']);
+    });
 
-    this.filteredProducts = ko.computed(() => {
-      const stage = this.currentStage();
-      if (!stage || !stage.formula) return [];
 
-      const rSize = this.reservoirSize();
-      const cFactor = this.conversionFactor();
-      const strength = this.nutrientStrength();
+    this.productsWithAmounts = ko.computed(() => {
+      const stage = this.selectedStageObj();
+      if (!stage || !stage.recipe) return [];
 
-      const productsWithAmounts = stage.formula.map(key => {
-        const product = PRODUCT_CATALOG[key];
+      const rSize = this.options().reservoirSize();
+      const cFactor = this.options().conversionFactor();
+      const strength = this.options().strength();
+
+      const productsWithAmounts = stage.recipe.map(recipeEntry => {
+        const product = recipeEntry.product;
         if (!product) return null;
 
-        const grams = calculateAmount(key, rSize, cFactor, strength);
+        const grams = calculateAmount(recipeEntry.baseGrams, rSize, cFactor, strength);
         const ounces = grams * 0.03527396;
         
         return {
@@ -101,38 +95,58 @@ class ViewModel {
         };
       }).filter(p => p !== null); 
 
-      return productsWithAmounts.sort((a, b) => {
-        const orderA = MIXING_ORDER.indexOf(a.key);
-        const orderB = MIXING_ORDER.indexOf(b.key);
-
-        const indexA = orderA === -1 ? 999 : orderA;
-        const indexB = orderB === -1 ? 999 : orderB;
-
-        return indexA - indexB;
-      });
+      return productsWithAmounts;
     });
+
+    this.selectedMedium.subscribe(newKey => { 
+      if (this._isLoadingState) return;
+
+      const medium = this.availableMediums().find(m => m.key === newKey); 
+      if (medium && medium.stages.length > 0) { 
+        this.selectedStage(medium.stages[0].key); 
+      } 
+    });
+
+    
+    this.loadState();
+    this._isLoadingState = false;
+    this.setupStateSaving();
 
   }
 
   loadState() {
     try {
       const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState) {
-        const state = JSON.parse(savedState);
-        
-        if (state.reservoirSize !== undefined) {
-          this.reservoirSize(parseFloat(state.reservoirSize));
-        }
-        if (state.selectedUnit) {
-          this.selectedUnit(state.selectedUnit);
-        }
-        if (state.nutrientStrength !== undefined) {
-          this.nutrientStrength(parseInt(state.nutrientStrength));
-        }
-        if (state.selectedPlantStage) {
-          this.selectedPlantStage(state.selectedPlantStage);
-        }
+      if (!savedState) return;
+
+      const state = JSON.parse(savedState);
+
+      if (state.reservoirSize !== undefined) {
+        this.options().reservoirSize(parseFloat(state.reservoirSize));
       }
+
+      if (state.selectedUnit) {
+        this.selectedUnit(state.selectedUnit);
+      }
+
+      if (state.strength !== undefined) {
+        this.options().strength(parseInt(state.strength));
+      }
+
+      if (state.selectedMedium) {
+        this.selectedMedium(state.selectedMedium);
+      }
+
+      if (state.selectedStage) {
+        // Validate stage exists in the selected medium
+        const medium = this.selectedMediumObj();
+        const stageExists = medium?.stages.some(s => s.key === state.selectedStage);
+
+        this.selectedStage(
+          stageExists ? state.selectedStage : medium?.stages[0]?.key
+        );
+      }
+
     } catch (e) {
       console.error("Could not load state from localStorage:", e);
       localStorage.removeItem(STORAGE_KEY);
@@ -141,11 +155,13 @@ class ViewModel {
 
   saveState() {
     const stateToSave = {
-      reservoirSize: this.reservoirSize(),
-      selectedUnit: this.selectedUnit(),
-      nutrientStrength: this.nutrientStrength(),
-      selectedPlantStage: this.selectedPlantStage()
+      reservoirSize: this.options().reservoirSize(),
+      reservoirUnits: this.options().reservoirUnits(),
+      strength: this.options().strength(),
+      selectedMedium: this.selectedMedium(),
+      selectedStage: this.selectedStage()
     };
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     } catch (e) {
@@ -154,19 +170,19 @@ class ViewModel {
   }
 
   setupStateSaving() {
-    const observablesToWatch = [
-      this.reservoirSize,
-      this.selectedUnit,
-      this.nutrientStrength,
-      this.selectedPlantStage
-    ];
+    this._autoSave = ko.pureComputed(() => {
+      // establish dependencies
+      this.options().reservoirSize();
+      this.options().reservoirUnits();
+      this.options().strength();
+      this.selectedMedium();
+      this.selectedStage();
 
-    const throttledSave = ko.pureComputed(this.saveState, this).extend({ throttle: 500 });
-
-    observablesToWatch.forEach(observable => {
-      observable.subscribe(throttledSave);
-    });
+      this.saveState();
+    }).extend({ throttle: 300 });
   }
+
+
 }
 
 Promise.all([

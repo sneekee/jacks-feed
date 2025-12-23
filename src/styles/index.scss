@@ -115,8 +115,11 @@ main {
 
     .formula {
       display: flex;
-
-      >custom-select {
+      flex-wrap: wrap;
+      >custom-select.mediums {
+        flex-basis: 100%;
+      }
+      >custom-select.stages {
         width: 150px;
       }
 

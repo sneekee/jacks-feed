@@ -8,7 +8,7 @@
 </head>
 
 <body>
-  <main id="ko-app" data-bind="with: $root">
+  <main id="ko-app">
     <header>
       <h1>Jack's 3-2-1 Feed Calculator</h1>
     </header>
@@ -22,14 +22,14 @@
           feed, so you can fine-tune the concentration for your specific needs.
         </p>
       </header>
-      <collapsible-fieldset open id="settings">
+      <collapsible-fieldset open id="settings" data-bind="with: options">
         <legend>Options</legend>
         <div style="grid-column: 1; grid-row: 1;">
           <label for="reservoirSize">Reservoir Size <span data-bind="text: reservoirLabel"></span></label>
           <custom-slider id="reservoirSize" min="1" max="20" step="1" show-stops data-bind="
             value: reservoirSize,
             attr: { 
-              'tooltip-format': reservoirUnits() === 'Liters' ? '{value} Liters' : '{value} Gallons' 
+              'tooltip-format': reservoirUnits === 'Liters' ? '{value} Liters' : '{value} Gallons' 
             }
             " role="slider" aria-valuemin="1" aria-valuemax="20" aria-valuenow="1" aria-label="Reservoir Size">
           </custom-slider>
@@ -37,7 +37,7 @@
         <div style="grid-column: 1; grid-row: 2;">
           <label for="strength">Strength <span data-bind="text: strengthLabel"></span></label>
           <custom-slider id="strength" min="50" max="200" step="5" value="100" tooltip-format="{value}%"
-            data-bind="value: nutrientStrength" role="slider" aria-valuemin="50" aria-valuemax="200" aria-valuenow="100"
+            data-bind="value: strength" role="slider" aria-valuemin="50" aria-valuemax="200" aria-valuenow="100"
             aria-label="Nutrient Strength">
           </custom-slider>
 
@@ -49,7 +49,7 @@
         </div>
         <div style="grid-column: 2; grid-row: 1 / span 2;align-self: center;justify-self: center;">
           <custom-unit-switch option-a-label="Liters" option-a-value="liters" option-b-label="Gallons"
-            option-b-value="gallons" data-bind="value: selectedUnit">
+            option-b-value="gallons" data-bind="value: reservoirUnits">
           </custom-unit-switch>
         </div>
       </collapsible-fieldset>
@@ -67,10 +67,10 @@
         </p>
       </collapsible-fieldset>
 
+
       <div class="formula">
-        <custom-select data-bind="value: selectedPlantStage, foreach: plantStages()" layout="fill">
-          <option data-bind="attr:{ value: stage }, text: stage"></option>
-        </custom-select>
+        <custom-select class="mediums" data-bind="customSelect: { options: availableMediums, value: selectedMedium, text: 'name', key: 'key' }" style="display: block; width: 100%;" layout="wrap"></custom-select>
+        <custom-select class="stages" data-bind="customSelect: { options: availableStages, value: selectedStage, text: 'name', key: 'key' }" layout="fill"></custom-select>
         <div class="data">
           <div class="targets">
             <div>
@@ -92,7 +92,7 @@
             <thead>
               <tr>
                 <th rowspan="2">Product</th>
-                <th colspan="3" data-bind="text: tableLabel" style="text-align: right;"></th>
+                <th colspan="3" data-bind="text: options().tableLabel" style="text-align: right;"></th>
               </tr>
               <tr>
                 <th>ppm (mg/L)</th>
@@ -101,13 +101,13 @@
               </tr>
             </thead>
 
-            <tbody data-bind="foreach: filteredProducts">
+            <tbody data-bind="foreach: productsWithAmounts">
               <tr>
-                <td style="text-align: left;"><a data-bind="attr: { href: link }, text: name" target="_blank"
+                <td style="text-align: left;"><a data-bind="attr: { href: $data.link }, text: $data.name" target="_blank"
                     style="white-space: wrap;"></a></td>
-                <td data-bind="text: ppm" style="text-align: right;"></td>
-                <td data-bind="text: baseValue === 0 ? '-' : grams" style="text-align: right;"></td>
-                <td data-bind="text: baseValue === 0 ? '-' : ounces" style="text-align: right;"></td>
+                <td data-bind="text: $data.basePPM" style="text-align: right;"></td>
+                <td data-bind="text: $data.baseGrams === 0 ? '-' : grams" style="text-align: right;"></td>
+                <td data-bind="text: $data.baseMN === 0 ? '-' : ounces" style="text-align: right;"></td>
               </tr>
             </tbody>
           </table>
