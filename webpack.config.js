@@ -15,7 +15,7 @@ export default (env, argv) => {
 
     output: {
       path: path.resolve("dist"),
-      filename: "bundle.js",
+      filename: isProduction ? "bundle.[contenthash].js" : "bundle.js",
       clean: true,
       publicPath: publicPath 
     },
