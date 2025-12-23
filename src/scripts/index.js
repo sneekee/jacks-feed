@@ -75,13 +75,13 @@ class ViewModel {
 
     this.productsWithAmounts = ko.computed(() => {
       const stage = this.selectedStageObj();
-      if (!stage || !stage.recipe) return [];
+      if (!this.selectedStageObj() || !this.selectedStageObj().recipe) return [];
 
       const rSize = this.options().reservoirSize();
       const cFactor = this.options().conversionFactor();
       const strength = this.options().strength();
 
-      const productsWithAmounts = stage.recipe.map(recipeEntry => {
+      const productsWithAmounts = this.selectedStageObj().recipe.map(recipeEntry => {
         const product = recipeEntry.product;
         if (!product) return null;
 
@@ -91,7 +91,8 @@ class ViewModel {
         return {
           ...product,
           grams: grams.toFixed(2),
-          ounces: ounces.toFixed(2)
+          ounces: ounces.toFixed(2),
+          ppm: `${recipeEntry.basePPM} ppm ${recipeEntry.baseMN}`
         };
       }).filter(p => p !== null); 
 

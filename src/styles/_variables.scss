@@ -17,11 +17,11 @@ $accent-dark: color.adjust($accent, $lightness: -20%);
 
 // --- Depths (Primary Colors derived from $bg-dark / $primary-dp1) ---
 $primary-dp1: #1a1a1a;
-$primary-dp2: color.adjust($primary-dp1, $lightness: 5%);
-$primary-dp3: color.adjust($primary-dp1, $lightness: 10%);
-$primary-dp4: color.adjust($primary-dp1, $lightness: 15%);
-$primary-dp5: color.adjust($primary-dp1, $lightness: 20%);
-$primary-dp6: color.adjust($primary-dp1, $lightness: 25%);
+$primary-dp2: color.adjust($primary-dp1, $lightness: 2%);
+$primary-dp3: color.adjust($primary-dp1, $lightness: 4%);
+$primary-dp4: color.adjust($primary-dp1, $lightness: 6%);
+$primary-dp5: color.adjust($primary-dp1, $lightness: 8%);
+$primary-dp6: color.adjust($primary-dp1, $lightness: 10%);
 
 // --- Switch/Select Component Variables ---
 $switch-radius: 12px;

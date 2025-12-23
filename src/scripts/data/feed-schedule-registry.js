@@ -48,7 +48,7 @@ export const FEED_SCHEDULES = {
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             }),
                             new RecipeEntry({
                                 product: PRODUCT_CATALOG.partB,
@@ -67,16 +67,18 @@ export const FEED_SCHEDULES = {
                         targetPpm700: 1330,
                         recipe: [
                             new RecipeEntry({
+                                key: 'bd863d52-7ae7-4f42-ab6c-5ad0d1eaf841',
                                 product: PRODUCT_CATALOG.bloom,
-                                base: 5.68,
+                                baseGrams: 5.68,
                                 basePPM: 150,
                                 baseMN: 'N'
                             }),
                             new RecipeEntry({
+                                key: 'f3ad623e-fcf2-400e-9cd6-1e1cd4699db4',
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             })
                         ]
                     }),
@@ -98,7 +100,7 @@ export const FEED_SCHEDULES = {
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             }),
                             new RecipeEntry({
                                 product: PRODUCT_CATALOG.partB,
@@ -118,7 +120,7 @@ export const FEED_SCHEDULES = {
                         recipe: [
                             new RecipeEntry({
                                 product: PRODUCT_CATALOG.finish,
-                                base: 5.41,
+                                baseGrams: 5.41,
                                 basePPM: 100,
                                 baseMN: 'N'
                             }),
@@ -126,7 +128,7 @@ export const FEED_SCHEDULES = {
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             })
                         ]
                     }),
@@ -148,7 +150,7 @@ export const FEED_SCHEDULES = {
             new Medium({
                 key: '04d9b0dc-9d25-4776-8b7d-f1962b5ff385',
                 name: 'Hydro/Coco',
-                description: 'Plants in a hydroponic system',
+                description: 'Plants in a Hydroponic System or Coco',
                 feedGuidLink: 'https://www.jacksnutrients.com/_files/ugd/3230c0_15ef9a140f114133bb1be94c8e6ad079.pdf',
                 stages: [
                     new PlantStage({
@@ -185,7 +187,7 @@ export const FEED_SCHEDULES = {
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             }),
                             new RecipeEntry({
                                 product: PRODUCT_CATALOG.partB,
@@ -205,7 +207,7 @@ export const FEED_SCHEDULES = {
                         recipe: [
                             new RecipeEntry({
                                 product: PRODUCT_CATALOG.bloom,
-                                base: 5.68,
+                                baseGrams: 5.68,
                                 basePPM: 150,
                                 baseMN: 'N'
                             }),
@@ -213,7 +215,7 @@ export const FEED_SCHEDULES = {
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             })
                         ]
                     }),
@@ -235,7 +237,7 @@ export const FEED_SCHEDULES = {
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             }),
                             new RecipeEntry({
                                 product: PRODUCT_CATALOG.partB,
@@ -255,7 +257,7 @@ export const FEED_SCHEDULES = {
                         recipe: [
                             new RecipeEntry({
                                 product: PRODUCT_CATALOG.finish,
-                                base: 5.41,
+                                baseGrams: 5.41,
                                 basePPM: 100,
                                 baseMN: 'N'
                             }),
@@ -263,7 +265,7 @@ export const FEED_SCHEDULES = {
                                 product: PRODUCT_CATALOG.epsom,
                                 baseGrams: .99,
                                 basePPM: 23,
-                                baseMN: 'M'
+                                baseMN: 'Mg'
                             })
                         ]
                     }),
@@ -285,7 +287,7 @@ export const FEED_SCHEDULES = {
             new Medium({
                 key: 'c9505e32-86ac-4076-82c8-da20f751d7fd',
                 name: 'AutoPots/Wicking',
-                description: 'Plants wicking or bottom feeding',
+                description: 'Wicking or Bottom Feeding aka. AutoPots',
                 feedGuidLink: 'https://www.jacksnutrients.com/_files/ugd/3230c0_471c23c1840d4c4c9d3f15626f865bcf.pdf',
                 stages: [
                     new PlantStage({
