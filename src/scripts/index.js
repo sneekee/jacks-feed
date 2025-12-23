@@ -10,7 +10,6 @@ import "../styles/index.scss";
 import './controls/custom-slider.js';
 import './controls/custom-switch.js';
 import './controls/collapsable-fieldset.js';
-import './controls/custom-select.js';
 
 function calculateAmount(baseGrams, reservoirSize, conversionFactor, strengthMultiplier) {
   return (
@@ -20,21 +19,6 @@ function calculateAmount(baseGrams, reservoirSize, conversionFactor, strengthMul
     reservoirSize
   );
 }
-
-const mediaQuery = window.matchMedia('(max-width: 768px)');
-
-function updateCustomSelectLayout() {
-  setTimeout(() => {
-    const customSelect = document.querySelector('.formula > custom-select.stages');
-    if (customSelect) {
-      const newLayout = mediaQuery.matches ? 'wrap' : 'fill';
-      customSelect.setAttribute('layout', newLayout);
-    }
-  }, 0); 
-}
-
-updateCustomSelectLayout();
-mediaQuery.addEventListener('change', updateCustomSelectLayout);
 
 const STORAGE_KEY = 'jacksNutrientCalculatorState';
 
@@ -85,8 +69,8 @@ class ViewModel {
         const product = recipeEntry.product;
         if (!product) return null;
 
-        const grams = calculateAmount(recipeEntry.baseGrams, rSize, cFactor, strength);
-        const ounces = grams * 0.03527396;
+        const grams = calculateAmount(parseFloat(recipeEntry.baseGrams), rSize, cFactor, strength);
+        const ounces = parseFloat(grams * 0.03527396);
         
         return {
           ...product,
@@ -189,7 +173,6 @@ class ViewModel {
 Promise.all([
     customElements.whenDefined("custom-slider"),
     customElements.whenDefined("custom-unit-switch"),
-    customElements.whenDefined("custom-select"),
     customElements.whenDefined("collapsible-fieldset")
 ]).then(() => {
     ko.applyBindings(new ViewModel());

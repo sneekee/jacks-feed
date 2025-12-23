@@ -168,6 +168,9 @@ main {
       border-top: none;
       background: #{$primary-dp2};
       align-content: stretch;
+      @media (max-width: 768px) {
+        flex-direction: column;
+      }
     }
 
     .availableStages {
@@ -184,6 +187,10 @@ main {
       background: #{$primary-dp3};
       border-bottom-left-radius: #{$switch-radius};
       min-width: calc(var(--dp) * 8);
+
+      @media (max-width: 768px) {
+        flex-direction: row;
+      }
 
       >li {
         display: block;
@@ -232,6 +239,11 @@ main {
           text-align: center;
           position: relative;
           overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: space-between;
+          
 
           &::after {
             content: "";
@@ -254,11 +266,11 @@ main {
             letter-spacing: 0.5px;
           }
 
-          span {
+          div {
             font-size: calc(var(--dp) * 1);
             font-weight: 600;
-            display: block;
             color: $text-light-gray;
+            font-size: calc(var(--dp) * 2);
           }
         }
       }
@@ -364,14 +376,6 @@ main {
       display: flex;
       flex-wrap: wrap;
 
-      >custom-select.mediums {
-        flex-basis: 100%;
-      }
-
-      >custom-select.stages {
-        width: 150px;
-      }
-
       >div.data {
         min-height: calc(var(--dp) * 26);
         flex-grow: 2;
@@ -400,13 +404,6 @@ main {
 
       @media (max-width: 768px) {
         flex-direction: column;
-
-        >custom-select {
-          width: 100%;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          display: block;
-        }
       }
     }
 
