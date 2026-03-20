@@ -26,13 +26,23 @@
         <legend>Options</legend>
         <div style="grid-column: 1; grid-row: 1;">
           <label for="reservoirSize">Reservoir Size <span data-bind="text: reservoirLabel"></span></label>
-          <custom-slider id="reservoirSize" min="1" max="20" step="1" show-stops data-bind="
-            value: reservoirSize,
-            attr: { 
-              'tooltip-format': reservoirUnits === 'Liters' ? '{value} Liters' : '{value} Gallons' 
-            }
-            " role="slider" aria-valuemin="1" aria-valuemax="20" aria-valuenow="1" aria-label="Reservoir Size">
+          <custom-slider id="reservoirSize" show-stops data-bind="
+            attr: {
+              min: $root.currentScale().min,
+              max: $root.currentScale().max,
+              step: $root.currentScale().step,
+              'tooltip-format': reservoirUnits() === 'liters' ? '{value} L' : '{value} gal'
+            },
+            value: reservoirSize
+            " role="slider" aria-label="Reservoir Size">
           </custom-slider>
+          <ul class="scale-selector" data-bind="foreach: $root.availableScales">
+            <li data-bind="
+              text: label,
+              css: { active: key === $root.selectedScaleKey() },
+              click: function() { $root.selectedScaleKey(key) }
+            "></li>
+          </ul>
         </div>
         <div style="grid-column: 1; grid-row: 2;">
           <label for="strength">Strength <span data-bind="text: strengthLabel"></span></label>

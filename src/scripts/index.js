@@ -1,7 +1,7 @@
 import ko from "knockout";
 import { FEED_SCHEDULES } from "./data/feed-schedule-registry.js";
 import { UNITS } from './data/constants.js';
-import { Options, ReservoirScale } from "./models/options.js";
+import { Options, ReservoirScales } from "./models/options.js";
 import { PlantStage } from "./models/plant-stage.js";
 
 import './ko-binding-handlers.js';
@@ -27,11 +27,21 @@ class ViewModel {
     this._isLoadingState = true;
     this.selectedFeedSchedule = ko.observable(FEED_SCHEDULES[321]);
     this.options = ko.observable(new Options({
-      reservoirScale: ReservoirScale["1-20"],
       reservoirSize: 5,
       reservoirUnits: UNITS.GALLONS,
       strength: 100,
     }));
+
+    this.selectedScaleKey = ko.observable('1-20');
+
+    this.availableScales = ko.computed(() =>
+      ReservoirScales[this.options().reservoirUnits()] ?? ReservoirScales.gallons
+    );
+
+    this.currentScale = ko.pureComputed(() => {
+      const scales = this.availableScales();
+      return scales.find(s => s.key === this.selectedScaleKey()) ?? scales[0];
+    });
 
     this.selectedMedium = ko.observable(this.selectedFeedSchedule().mediums[0].key);
     this.selectedMediumObj = ko.pureComputed(() => { 
@@ -107,6 +117,24 @@ class ViewModel {
     });
 
     
+    // When units change, drop to first scale if current key doesn't exist in new unit's scales
+    this.options().reservoirUnits.subscribe(() => {
+      if (this._isLoadingState) return;
+      const available = this.availableScales();
+      if (!available.some(s => s.key === this.selectedScaleKey())) {
+        this.selectedScaleKey(available[0].key);
+      }
+    });
+
+    // Clamp reservoir size to new scale's bounds when scale changes
+    this.currentScale.subscribe(scale => {
+      if (this._isLoadingState) return;
+      const size = this.options().reservoirSize();
+      const clamped = Math.min(Math.max(size, scale.min), scale.max);
+      const stepped = Math.round((clamped - scale.min) / scale.step) * scale.step + scale.min;
+      this.options().reservoirSize(Math.min(stepped, scale.max));
+    });
+
     this.loadState();
     this._isLoadingState = false;
     this.setupStateSaving();
@@ -136,6 +164,13 @@ class ViewModel {
         this.selectedMedium(state.selectedMedium);
       }
 
+      if (state.selectedScaleKey) {
+        const available = this.availableScales();
+        if (available.some(s => s.key === state.selectedScaleKey)) {
+          this.selectedScaleKey(state.selectedScaleKey);
+        }
+      }
+
       if (state.selectedStage) {
         // Validate stage exists in the selected medium
         const medium = this.selectedMediumObj();
@@ -157,6 +192,7 @@ class ViewModel {
       reservoirSize: this.options().reservoirSize(),
       reservoirUnits: this.options().reservoirUnits(),
       strength: this.options().strength(),
+      selectedScaleKey: this.selectedScaleKey(),
       selectedMedium: this.selectedMedium(),
       selectedStage: this.selectedStage()
     };
@@ -174,6 +210,7 @@ class ViewModel {
       this.options().reservoirSize();
       this.options().reservoirUnits();
       this.options().strength();
+      this.selectedScaleKey();
       this.selectedMedium();
       this.selectedStage();
 

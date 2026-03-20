@@ -70,6 +70,44 @@ main {
       }
     }
 
+    .scale-selector {
+      list-style: none;
+      margin: calc(var(--dp) * 0.4) 0 0 0;
+      padding: 0;
+      display: flex;
+      border: 1px solid #{$switch-border};
+      border-radius: #{$switch-radius};
+      overflow: hidden;
+      box-shadow: #{$switch-elevation};
+      user-select: none;
+
+      > li {
+        flex: 1;
+        text-align: center;
+        padding: calc(var(--dp) * 0.35) 0;
+        font-size: calc(var(--dp) * 0.8);
+        letter-spacing: $switch-label-letter-spacing;
+        cursor: pointer;
+        color: #{$border-gray};
+        background: #{$switch-bg};
+        border-right: 1px solid #{$switch-border};
+        transition: background 0.15s ease, color 0.15s ease;
+
+        &:last-child { border-right: none; }
+
+        &.active {
+          background: #{$switch-bg-active};
+          color: #{$accent-light};
+        }
+
+        &:hover:not(.active) {
+          background: #{color.adjust($switch-bg, $lightness: $switch-hover-lightness-adjust)};
+        }
+
+        &:active { transform: scale(#{$switch-press-scale}); }
+      }
+    }
+
     collapsible-fieldset {
       &#settings::part(content) {
         display: grid;
