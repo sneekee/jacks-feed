@@ -9,13 +9,11 @@ export const ReservoirScale = {
 }
 
 export class Options {
-    constructor({reservoirScale, reservoirSize, reservoirUnits, strength, selectedMedium, selectedStage}){
+    constructor({reservoirScale, reservoirSize, reservoirUnits, strength}){
         this.reservoirScale = ko.observable(reservoirScale);
         this.reservoirSize = ko.observable(reservoirSize);
         this.reservoirUnits = ko.observable(reservoirUnits);
         this.strength = ko.observable(strength);
-        this.selectedMedium = ko.observable(selectedMedium);
-        this.selectedStage = ko.observable(selectedStage);
 
         this.reservoirUnitsLabel = ko.pureComputed(() => this.reservoirUnits() === UNITS.LITERS ? "Liters" : "Gallons");
 

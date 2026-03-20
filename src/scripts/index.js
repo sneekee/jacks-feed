@@ -31,7 +31,6 @@ class ViewModel {
       reservoirSize: 5,
       reservoirUnits: UNITS.GALLONS,
       strength: 100,
-      selectedMedium: this.selectedFeedSchedule().mediums[0]
     }));
 
     this.selectedMedium = ko.observable(this.selectedFeedSchedule().mediums[0].key);
@@ -59,13 +58,13 @@ class ViewModel {
 
     this.productsWithAmounts = ko.computed(() => {
       const stage = this.selectedStageObj();
-      if (!this.selectedStageObj() || !this.selectedStageObj().recipe) return [];
+      if (!stage || !stage.recipe) return [];
 
       const rSize = this.options().reservoirSize();
       const cFactor = this.options().conversionFactor();
       const strength = this.options().strength();
 
-      const productsWithAmounts = this.selectedStageObj().recipe.map(recipeEntry => {
+      const productsWithAmounts = stage.recipe.map(recipeEntry => {
         const product = recipeEntry.product;
         if (!product) return null;
 
@@ -110,8 +109,8 @@ class ViewModel {
         this.options().reservoirSize(parseFloat(state.reservoirSize));
       }
 
-      if (state.selectedUnit) {
-        this.selectedUnit(state.selectedUnit);
+      if (state.reservoirUnits) {
+        this.options().reservoirUnits(state.reservoirUnits);
       }
 
       if (state.strength !== undefined) {
@@ -155,7 +154,7 @@ class ViewModel {
   }
 
   setupStateSaving() {
-    this._autoSave = ko.pureComputed(() => {
+    this._autoSave = ko.computed(() => {
       // establish dependencies
       this.options().reservoirSize();
       this.options().reservoirUnits();

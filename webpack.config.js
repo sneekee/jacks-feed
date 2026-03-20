@@ -1,6 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import sass from "sass-embedded";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,8 +26,8 @@ export default (env, argv) => {
         {
           test: /\.scss$/,
           resourceQuery: /inline/,
+          type: 'asset/source',
           use: [
-            'raw-loader',
             {
               loader: 'sass-loader',
               options: {
@@ -40,7 +41,7 @@ export default (env, argv) => {
           test: /\.scss$/,
           resourceQuery: { not: [/inline/] },
           use: [
-            'style-loader',
+            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
             'css-loader',
             {
               loader: 'sass-loader',
@@ -55,9 +56,10 @@ export default (env, argv) => {
       new HtmlWebpackPlugin({
         template: "./src/index.html",
         minify: {
-          removeComments: false 
+          removeComments: false
         }
-      })
+      }),
+      ...(isProduction ? [new MiniCssExtractPlugin({ filename: "styles.[contenthash].css" })] : [])
     ],
 
     resolve: {
