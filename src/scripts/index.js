@@ -55,6 +55,21 @@ class ViewModel {
       return stage || new PlantStage('Default', 0, 0, 0, ['PlainWater']);
     });
 
+    this.scaledTargets = ko.pureComputed(() => {
+      const stage = this.currentStage();
+      const strength = this.options().strength();
+      const factor = strength / 100;
+      const suffix = strength !== 100 ? ` @ ${strength}%` : '';
+      return {
+        ec:         (stage.targetEc     * factor).toFixed(2),
+        ppm500:     Math.round(stage.targetPpm500 * factor),
+        ppm700:     Math.round(stage.targetPpm700 * factor),
+        ecLabel:    `Target EC${suffix}`,
+        ppm500Label:`Target PPM (500 Scale)${suffix}`,
+        ppm700Label:`Target PPM (700 Scale)${suffix}`,
+      };
+    });
+
 
     this.productsWithAmounts = ko.computed(() => {
       const stage = this.selectedStageObj();
@@ -75,7 +90,7 @@ class ViewModel {
           ...product,
           grams: grams.toFixed(2),
           ounces: ounces.toFixed(2),
-          ppm: `${recipeEntry.basePPM} ppm ${recipeEntry.baseMN}`
+          ppm: `${Math.round(recipeEntry.basePPM * (strength / 100))} ppm ${recipeEntry.baseMN}`
         };
       }).filter(p => p !== null); 
 
