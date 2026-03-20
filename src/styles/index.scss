@@ -497,4 +497,27 @@ footer {
   padding: calc(var(--dp) * 0.5) calc(var(--dp) * 1);
   box-shadow: $footer-box-shadow;
   user-select: none;
+
+  .github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-top: calc(var(--dp) * 0.1);
+    color: #{$border-gray};
+    text-decoration: none;
+    font-size: calc(var(--dp) * 0.85);
+    letter-spacing: 0.3px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: #{$accent-light};
+    }
+
+    .github-mark {
+      width: 1em;
+      height: 1em;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+  }
 }
