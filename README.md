@@ -9,13 +9,21 @@ This is an open-source, interactive calculator designed to simplify the nutrient
 
 ## Features
 
-* **Metric & Imperial Support:** Easily toggle between **Liters** and **Gallons** for your reservoir size.
+* **Multiple Growing Mediums:** Supports **Soil**, **Hydro/Coco**, and **AutoPots/Wicking** grow styles, each with their own stage-specific recipes sourced from the official Jack's feed guides.
 
-* **Adjustable Strength:** Fine-tune your nutrient concentration with a slider to adjust the feed strength from **50% to 200%** of the recommended schedule.
+* **Plant Stage Selection:** Choose the correct stage for your crop — Propagation, Vegetative, Bud Set, Flower, Late Flower, or Flush — and get the right recipe for that stage automatically.
 
-* **Precise Calculations:** Outputs exact measurements for Part A, Part B (CalNit), and Epsom Salt in both **Grams** and **Dry Ounces**.
+* **Metric & Imperial Support:** Toggle between **Liters** and **Gallons**. Each unit has its own set of reservoir scale tiers suited to realistic batch sizes for that unit.
 
-* **Target Readings:** Automatically calculates and displays the expected **Target EC** and **Target PPM** (500 and 700 scales) for your mix.
+* **Unit-Aware Reservoir Scales:** Select a scale range that matches your batch size. Gallons offer 1–20 / 20–40 / 40–60 / 60–80 gal ranges at 1 gal precision. Liters offer 1–20 / 20–100 / 100–200 / 200–300 L ranges with step sizes scaled to match — keeping the slider usable at every range.
+
+* **Adjustable Strength:** Fine-tune your nutrient concentration from **50% to 200%** of the recommended schedule using a slider.
+
+* **Strength-Scaled Outputs:** All calculated values — grams, dry ounces, per-product PPM, Target EC, and Target PPM (500 and 700 scales) — update live with your strength setting. Target card labels show the active strength percentage when it deviates from 100%.
+
+* **Precise Measurements:** Outputs exact amounts for every product in a stage recipe in both **Grams** and **Dry Ounces**.
+
+* **Persistent State:** All selections (medium, stage, reservoir size, scale, units, strength) are saved to browser `localStorage` and restored on the next visit.
 
 * **Mobile Friendly:** A clean, responsive interface for easy use on any device.
 
@@ -30,68 +38,57 @@ This project is built using vanilla JavaScript, SCSS, and HTML, with Webpack for
 
 ### Prerequisites
 
-You need to have Node.js and npm (or yarn) installed on your system.
+You need to have Node.js and npm installed on your system.
 
 ### Installation and Local Development
 
 1. **Clone the repository:**
 
 ```
-
 git clone https://github.com/sneekee/jacks-feed.git
 cd jacks-feed
-
 ```
 
 2. **Install dependencies:**
 
 ```
-
 npm install
-
-# or using yarn
-
-# yarn install
-
 ```
 
 3. **Run the development server:**
-To start a local server with live-reloading:
 
 ```
-
 npm run start
-
 ```
 
-The application should now be available at `http://localhost:8080` (or the port specified by Webpack).
+The application should now be available at `http://localhost:8080`.
 
 ### Building for Production
 
-To create the optimized, minified files for deployment (e.g., to GitHub Pages):
-
 ```
-
 npm run build
-
 ```
 
-This command will compile and bundle the assets into a `dist/` directory.
+Compiles and bundles assets into the `dist/` directory. The production build extracts CSS into a separate file (loaded via `<link>` before the body renders) to eliminate the white flash on load, and uses content hashes on all output files for cache busting.
+
+### Deploying to GitHub Pages
+
+```
+npm run deploy
+```
+
+Builds the project and pushes the `dist/` directory to the `gh-pages` branch.
 
 ## Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 1. Fork the Project
-
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-
 3. Commit your Changes (`git commit -m 'feat: Add some AmazingFeature'`)
-
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
-
 5. Open a Pull Request
 
 ## License
 
-Distributed under the **Unlicense**. See the [`LICENSE`](https://www.google.com/search?q=./LICENSE) file for more information.
+Distributed under the **Unlicense**. See the [`LICENSE`](./LICENSE) file for more information.
